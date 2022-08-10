@@ -7,7 +7,7 @@ const Content = ({ part, exercises }) => {
         <>
             {part.map((element, index) => {
                 return (
-                    <p>
+                    <p key={element}>
                         {element} {exercises[index]}
                     </p>
                 );
