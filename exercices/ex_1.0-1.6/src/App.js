@@ -1,5 +1,5 @@
 const Header = ({ course }) => {
-    return <h1>{course}</h1>;
+    return <h2>{course}</h2>;
 };
 
 const Content = ({ part, exercises }) => {
@@ -20,7 +20,7 @@ const Total = ({ exercises1, exercises2, exercises3 }) => {
     return <p>{exercises1 + exercises2 + exercises3}</p>;
 };
 
-const App = () => {
+export default function App() {
     const course = {
         name: "Half Stack application development",
         parts: [
@@ -57,6 +57,4 @@ const App = () => {
             />
         </div>
     );
-};
-
-export default App;
+}
