@@ -1,0 +1,71 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const DetailedResult = ({ country }) => {
+    return (
+        <div>
+            <h1>{country.name.common}</h1>
+            <div>capital: {country.capital[0]}</div>
+            <div>area: {country.area}</div>
+            <h3>Languages</h3>
+            <ul>
+                {Object.keys(country.languages).map((key, index) => {
+                    return <li key={country.languages[key]}>{country.languages[key]}</li>;
+                })}
+            </ul>
+            <img src={country.flags.png} alt="flag" />
+        </div>
+    );
+};
+
+const Country = ({ country }) => {
+    const [showData, setShowData] = useState(false);
+
+    return (
+        <div>
+            {country.name.common}{" "}
+            <button onClick={() => setShowData(!showData)}>Show detailed results</button>
+            {showData ? <DetailedResult country={country} /> : null}
+        </div>
+    );
+};
+
+const Results = ({ results }) => {
+    if (results.length > 5) {
+        return <div>Too much results</div>;
+    }
+
+    if (results.length === 1) {
+        return <DetailedResult country={results[0]} />;
+    }
+
+    return results.map((country) => {
+        return <Country country={country} key={country.flag} />;
+    });
+};
+
+export default function App() {
+    const [countries, setCountries] = useState([]);
+    const [filter, setFilter] = useState("");
+
+    const results =
+        countries &&
+        countries.filter((country) =>
+            country.name.common.toLowerCase().includes(filter.toLocaleLowerCase())
+        );
+
+    useEffect(() => {
+        axios.get("https://restcountries.com/v3.1/all").then((response) => {
+            setCountries(response.data);
+        });
+    }, []);
+
+    return (
+        <div className="App">
+            <div>
+                find country: <input value={filter} onChange={(e) => setFilter(e.target.value)} />
+            </div>
+            <Results results={results} />
+        </div>
+    );
+}
