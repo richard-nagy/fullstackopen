@@ -1,5 +1,3 @@
-// npx json-server --port 3001 --watch db.json
-
 import personsService from "./services/persons";
 
 import { useEffect, useState } from "react";
@@ -32,14 +30,27 @@ const PersonForm = ({ addPerson, newName, setNewName, newNumber, setNewNumber })
     );
 };
 
+const messageHandler = (text, color, setMessage) => {
+    setMessage({ text: text, color: color });
+    setTimeout(() => {
+        setMessage(null);
+    }, 5000);
+};
+
 // Component containing persons and their datas
-const Persons = ({ persons, filter, setPersons }) => {
+const Persons = ({ persons, filter, setPersons, setMessage }) => {
     // Delete user from database
     const deleteUser = (id) => {
         if (window.confirm("Do you really want to delete this person?")) {
-            personsService.remove(id).then(() => {
-                setPersons(persons.filter((oldPerson) => oldPerson.id !== id));
-            });
+            personsService
+                .remove(id)
+                .then(() => {
+                    setPersons(persons.filter((oldPerson) => oldPerson.id !== id));
+                    messageHandler("Successful delete", "green", setMessage);
+                })
+                .catch(() => {
+                    messageHandler("Failed delete", "red", setMessage);
+                });
         }
     };
 
@@ -63,6 +74,7 @@ const App = () => {
     const [newName, setNewName] = useState("");
     const [newNumber, setNewNumber] = useState("");
     const [filter, setFilter] = useState("");
+    const [message, setMessage] = useState(null);
 
     // Get initial data from database
     useEffect(() => {
@@ -93,6 +105,10 @@ const App = () => {
                         );
                         setNewName("");
                         setNewNumber("");
+                        messageHandler("Successful update", "green", setMessage);
+                    })
+                    .catch(() => {
+                        messageHandler("Failed update", "red", setMessage);
                     });
             }
 
@@ -105,16 +121,37 @@ const App = () => {
             number: newNumber,
         };
 
-        personsService.create(personOjbect).then((returnedPerson) => {
-            setPersons(persons.concat(returnedPerson));
-            setNewName("");
-            setNewNumber("");
-        });
+        personsService
+            .create(personOjbect)
+            .then((returnedPerson) => {
+                setPersons(persons.concat(returnedPerson));
+                setNewName("");
+                setNewNumber("");
+                messageHandler("Successful add", "green", setMessage);
+            })
+            .catch(() => {
+                messageHandler("Failed add", "red", setMessage);
+            });
     };
 
     return (
         <div>
             <h2>Phonebook</h2>
+            {message && (
+                <div
+                    style={{
+                        color: message.color,
+                        background: "lightgrey",
+                        fontSize: "20px",
+                        borderStyle: "solid",
+                        borderRadius: "5px",
+                        padding: "10px",
+                        marginBottom: "10px",
+                    }}
+                >
+                    {message.text}
+                </div>
+            )}
             <Filter filter={filter} setFilter={setFilter} />
             <PersonForm
                 addPerson={addPerson}
@@ -123,7 +160,12 @@ const App = () => {
                 newNumber={newNumber}
                 setNewNumber={setNewNumber}
             />
-            <Persons persons={persons} filter={filter} setPersons={setPersons} />
+            <Persons
+                persons={persons}
+                filter={filter}
+                setPersons={setPersons}
+                setMessage={setMessage}
+            />
         </div>
     );
 };
