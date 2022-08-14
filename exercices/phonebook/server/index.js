@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 
 let persons = [
@@ -27,6 +29,11 @@ let persons = [
     },
 ];
 
+const generateId = () => {
+    const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0;
+    return maxId + 1;
+};
+
 app.get("/api/persons", (_, response) => {
     response.send(persons);
 });
@@ -51,7 +58,7 @@ app.get("/api/persons/:id", (request, response) => {
 app.post("/api/person", (request, response) => {
     const body = request.body;
 
-    if (!body.content) {
+    if (!body) {
         return response.status(400).json({
             error: "content missing",
         });
@@ -84,7 +91,7 @@ app.post("/api/person", (request, response) => {
     persons = persons.concat(person);
 
     app.use(morgan("tiny", ":id :method :url :response-time"));
-    response.json(note);
+    response.json(person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
