@@ -55,7 +55,7 @@ app.get("/api/persons/:id", (request, response) => {
     }
 });
 
-app.post("/api/person", (request, response) => {
+app.post("/api/persons", (request, response) => {
     const body = request.body;
 
     if (!body) {
