@@ -7,3 +7,5 @@ Exercises 3.9.
 Exercises 3.13.-3.14.
 
 3.15.-3.18.
+
+Exercises 3.19.-3.21.

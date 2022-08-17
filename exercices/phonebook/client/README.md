@@ -12,4 +12,6 @@ Exercises 3.13.-3.14.
 
 3.15.-3.18.
 
+Exercises 3.19.-3.21.
+
 npx json-server --port 3001 --watch db.json

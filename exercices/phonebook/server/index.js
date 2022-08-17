@@ -1,40 +1,13 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const Person = require("./models/person");
 const cors = require("cors");
-const morgan = require("morgan");
+const Person = require("./models/person");
+
+app.use(express.static("build"));
 
 app.use(cors());
 app.use(express.json());
-
-let persons = [
-    {
-        id: 1,
-        name: "Arto Hellas",
-        number: "040-123456",
-    },
-    {
-        id: 2,
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-    },
-    {
-        id: 3,
-        name: "Dan Abramov",
-        number: "12-43-234345",
-    },
-    {
-        id: 4,
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-    },
-];
-
-const generateId = () => {
-    const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0;
-    return maxId + 1;
-};
 
 app.get("/api/persons", (_, response) => {
     Person.find({}).then((persons) => {
@@ -43,9 +16,10 @@ app.get("/api/persons", (_, response) => {
 });
 
 app.get("/info", (_, response) => {
-    response.send(
-        `<div>Phonebook has info for ${persons.length} people</div><div>${new Date()}</div>`
-    );
+    response
+        .send
+        // `<div>Phonebook has info for ${persons.length} people</div><div>${new Date()}</div>`
+        ();
 });
 
 app.get("/api/persons/:id", (request, response) => {
@@ -76,7 +50,7 @@ app.put("/api/persons/:id", (request, response, next) => {
         .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
     const body = request.body;
 
     if (!body) {
@@ -103,9 +77,12 @@ app.post("/api/persons", (request, response) => {
     });
 
     // app.use(morgan("tiny", ":id :method :url :response-time"));
-    person.save().then((savedPerson) => {
-        response.json(savedPerson);
-    });
+    person
+        .save()
+        .then((savedPerson) => {
+            response.json(savedPerson);
+        })
+        .catch((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -128,7 +105,7 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler);
 
-const PORT = 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

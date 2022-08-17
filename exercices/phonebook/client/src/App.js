@@ -88,29 +88,31 @@ const App = () => {
     const addPerson = (event) => {
         event.preventDefault();
 
-        // Check if person already exists and if he does ask if we
-        // would like to update their phone number
+        // * Check if person already exists and if he does ask if we
+        // * would like to update their phone number
         if (persons.find((person) => person.name === newName)) {
-            if (
-                window.confirm("Person already exists, would you like to update the phone number?")
-            ) {
-                const newPerson = persons.find((person) => person.name === newName);
-                personsService
-                    .update(newPerson.id, { ...newPerson, number: newNumber })
-                    .then((returnedPerson) => {
-                        setPersons(
-                            persons.map((oldPerson) =>
-                                oldPerson.id !== newPerson.id ? oldPerson : returnedPerson
-                            )
-                        );
-                        setNewName("");
-                        setNewNumber("");
-                        messageHandler("Successful update", "green", setMessage);
-                    })
-                    .catch(() => {
-                        messageHandler("Failed update", "red", setMessage);
-                    });
-            }
+            messageHandler("Name already exists in database", "red", setMessage);
+
+            // if (
+            //     window.confirm("Person already exists, would you like to update the phone number?")
+            // ) {
+            //     const newPerson = persons.find((person) => person.name === newName);
+            //     personsService
+            //         .update(newPerson.id, { ...newPerson, number: newNumber })
+            //         .then((returnedPerson) => {
+            //             setPersons(
+            //                 persons.map((oldPerson) =>
+            //                     oldPerson.id !== newPerson.id ? oldPerson : returnedPerson
+            //                 )
+            //             );
+            //             setNewName("");
+            //             setNewNumber("");
+            //             messageHandler("Successful update", "green", setMessage);
+            //         })
+            //         .catch(() => {
+            //             messageHandler("Failed update", "red", setMessage);
+            //         });
+            // }
 
             return;
         }
