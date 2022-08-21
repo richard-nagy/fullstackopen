@@ -24,8 +24,18 @@ const errorHandler = (error, request, response, next) => {
     next(error);
 };
 
+const checkTitleUrl = (request, response, next) => {
+    if (!request.body.title || !request.body.url) {
+        console.log("Missing Information");
+        return response.status(400).send({ error: "Bad request!" });
+    }
+
+    next();
+};
+
 module.exports = {
     requestLogger,
     unknownEndpoint,
     errorHandler,
+    checkTitleUrl,
 };

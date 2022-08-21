@@ -19,11 +19,12 @@ const noteSchema = new mongoose.Schema({
     likes: {
         type: Number,
         required: true,
+        set: (value) => (value ? value : 0),
     },
 });
 
 noteSchema.set("toJSON", {
-    transform: (document, returnedObject) => {
+    transform: (_, returnedObject) => {
         returnedObject.id = returnedObject._id.toString();
         delete returnedObject._id;
         delete returnedObject.__v;
