@@ -1,4 +1,5 @@
 const logger = require("./logger");
+const jwt = require("jsonwebtoken");
 
 const requestLogger = (request, response, next) => {
     logger.info("Method:", request.method);
@@ -33,9 +34,31 @@ const checkTitleUrl = (request, response, next) => {
     next();
 };
 
+// Take the auth token, derypt it and set it
+// as request.token
+const tokenExtractor = (request, response, next) => {
+    const authorization = request.get("authorization");
+    if (!(authorization && authorization.toLowerCase().startsWith("bearer "))) {
+        return response.status(400).send({ error: "Bad token!" });
+    }
+
+    const token = authorization.substring(7);
+
+    request.token = jwt.verify(token, process.env.SECRET);
+
+    next();
+};
+
+const userExtractor = (request, response, next) => {
+    request.user = request.token.id;
+    next();
+};
+
 module.exports = {
     requestLogger,
     unknownEndpoint,
     errorHandler,
     checkTitleUrl,
+    tokenExtractor,
+    userExtractor,
 };

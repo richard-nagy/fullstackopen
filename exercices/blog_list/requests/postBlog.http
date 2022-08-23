@@ -1,0 +1,11 @@
+POST http://localhost:3003/api/blogs/
+content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWQiOiI2MzAzOGI3YzhiNmJmOTdkN2FmMmMyNjEiLCJpYXQiOjE2NjEyNTcxNzAsImV4cCI6MTY2MTI2MDc3MH0.LPL_rg8G129ltKZIcjILGiuGkVYJ-SYeP6vO2eutca4
+
+{
+    "title": "balblslabalaasfpsaflp",
+    "author": "sdsdfsdffdsdsf",
+    "url": "fssasasaasf",
+    "likes": 123,
+    "userId": "63038b7c8b6bf97d7af2c261"
+}
