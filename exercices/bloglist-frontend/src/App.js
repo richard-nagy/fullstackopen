@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
+import { useState, useEffect, useRef } from "react";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import Notification from "./components/Notification";
+import BlogList from "./components/BlogList";
 
 const App = () => {
     const [blogs, setBlogs] = useState([]);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [user, setUser] = useState(null);
-    const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
-    const [notification, setNotification] = useState();
+    const [notificationType, setNotificationType] = useState({});
+    const noteFormRef = useRef();
 
     useEffect(() => {
         const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -30,7 +31,6 @@ const App = () => {
             .getAll()
             .then((initialBlogs) => {
                 setBlogs(initialBlogs);
-                console.log(initialBlogs);
             })
             .catch(() => {
                 //! If the token is not good:
@@ -41,11 +41,19 @@ const App = () => {
     }, [user]);
 
     const handleNotification = (message, color) => {
-        setNotification({ message: message, color: color });
+        setNotificationType({ message: message, color: color });
 
         setTimeout(() => {
-            setNotification({});
+            setNotificationType({});
         }, "5000");
+    };
+
+    const addBlog = (blogObject) => {
+        noteFormRef.current.toggleVisibility();
+        blogService.create(blogObject).then((returnedBlog) => {
+            setBlogs(blogs.concat(returnedBlog));
+            handleNotification("Succesfully added new blog", "green");
+        });
     };
 
     const loginForm = () => (
@@ -78,76 +86,29 @@ const App = () => {
         localStorage.clear();
     };
 
-    const addBlog = (event) => {
-        event.preventDefault();
-        const noteObject = {
-            title: newBlog.title,
-            author: newBlog.author,
-            url: newBlog.url,
-        };
-
+    const deleteBlog = (id) => {
         blogService
-            .create(noteObject)
-            .then((returnedNote) => {
-                setBlogs(blogs.concat(returnedNote));
-                setNewBlog({ title: "", author: "", url: "" });
-                handleNotification("Succesfully added blog", "green");
+            .remove(id)
+            .then((returnedBlog) => {
+                setBlogs(returnedBlog);
+                handleNotification("Succesfully deleted blog", "green");
             })
             .catch(() => {
-                handleNotification("Failed adding blog", "red");
+                handleNotification("Failed deleting blog", "red");
             });
     };
 
-    const addNewBlog = () => (
-        <form onSubmit={addBlog}>
-            <div>
-                title
-                <input
-                    type="text"
-                    value={newBlog.title}
-                    name="title"
-                    onChange={({ target }) =>
-                        setNewBlog((oldAddBlog) => ({ ...oldAddBlog, title: target.value }))
-                    }
-                />
-            </div>
-            <div>
-                author
-                <input
-                    type="author"
-                    value={newBlog.author}
-                    name="author"
-                    onChange={({ target }) =>
-                        setNewBlog((oldAddBlog) => ({ ...oldAddBlog, author: target.value }))
-                    }
-                />
-            </div>
-            <div>
-                url
-                <input
-                    type="url"
-                    value={newBlog.url}
-                    name="url"
-                    onChange={({ target }) =>
-                        setNewBlog((oldAddBlog) => ({ ...oldAddBlog, url: target.value }))
-                    }
-                />
-            </div>
-            <button type="submit">add</button>
-        </form>
-    );
-
-    const blogInterface = () => (
-        <>
-            <p>
-                {user.name} logged in <button onClick={() => logOut()}>log out</button>
-            </p>
-            {addNewBlog()}
-            {blogs.map((blog) => {
-                return <Blog key={blog.id} blog={blog} />;
-            })}
-        </>
-    );
+    const updateBlog = (id, blogObject) => {
+        blogService
+            .update(id, blogObject)
+            .then((returnedBlog) => {
+                // setBlogs(returnedBlog);
+                handleNotification("Succesfully updated post", "green");
+            })
+            .catch(() => {
+                handleNotification("Failed updating blog", "red");
+            });
+    };
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -168,27 +129,13 @@ const App = () => {
         }
     };
 
-    const notificationPanel = () => (
-        <div
-            style={{
-                backgroundColor: "lightgray",
-                color: notification.color,
-                border: `2px solid ${notification.color}`,
-                borderRadius: "2px",
-                padding: "10px",
-                fontWeight: "bold",
-            }}
-        >
-            {notification.message}
-        </div>
-    );
-
     return (
         <div>
             <h1>blogs</h1>
-            {notification.message && notificationPanel()}
+            {notificationType.message && Notification(notificationType)}
             {user === null && loginForm()}
-            {user !== null && blogInterface()}
+            {user !== null &&
+                BlogList(user, logOut, noteFormRef, addBlog, blogs, deleteBlog, updateBlog)}
         </div>
     );
 };
