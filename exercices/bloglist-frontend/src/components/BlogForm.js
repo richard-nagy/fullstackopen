@@ -4,12 +4,12 @@ const BlogForm = ({ createBlog }) => {
     const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
 
     const handleChange = (event, parameter) => {
-        console.log(newBlog);
         setNewBlog((oldAddBlog) => ({ ...oldAddBlog, [parameter]: event.target.value }));
     };
 
     const addBlog = (event) => {
         event.preventDefault();
+        console.log(newBlog);
         createBlog(newBlog);
         setNewBlog({ title: "", author: "", url: "" });
     };

@@ -27,7 +27,7 @@ const Blog = ({ blog, deleteBlog, updateBlog }) => {
             <Togglable buttonLabel="info" refs={noteFormRef} header={blog.title}>
                 <div>{blog.author}</div>
                 <div>{blog.url}</div>
-                <div>{likes}</div>
+                <div className="likes">{likes}</div>
                 <button onClick={handleDelete}>delete</button>
                 <button onClick={handleLike}>like</button>
             </Togglable>
