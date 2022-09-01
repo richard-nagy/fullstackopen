@@ -1,5 +1,7 @@
 Exercises 6.3.-6.8.
 
+Exercises 6.9.-6.12.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
