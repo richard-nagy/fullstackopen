@@ -8,6 +8,7 @@ import {
     useParams,
     useNavigate,
 } from "react-router-dom";
+import { useField } from "./hooks";
 
 const Menu = ({ anecdotes, addNew, notification }) => {
     const padding = {
@@ -31,14 +32,8 @@ const Menu = ({ anecdotes, addNew, notification }) => {
 
             <Routes>
                 <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
-            </Routes>
-            <Routes>
                 <Route path="/create" element={<CreateNew addNew={addNew} />} />
-            </Routes>
-            <Routes>
                 <Route path="/about" element={<About />} />
-            </Routes>
-            <Routes>
                 <Route path="/anecdotes/:id" element={<AnecdoteSingle anecdotes={anecdotes} />} />
             </Routes>
         </BrowserRouter>
@@ -106,19 +101,25 @@ const Footer = () => (
 const CreateNew = (props) => {
     const navigate = useNavigate();
 
-    const [content, setContent] = useState("");
-    const [author, setAuthor] = useState("");
-    const [info, setInfo] = useState("");
+    const content = useField("");
+    const author = useField("");
+    const info = useField("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
         navigate("/");
         props.addNew({
-            content,
-            author,
-            info,
+            content: content.value,
+            author: author.value,
+            info: info.value,
             votes: 0,
         });
+    };
+
+    const handleClear = () => {
+        content.clearInput();
+        author.clearInput();
+        info.clearInput();
     };
 
     return (
@@ -127,25 +128,20 @@ const CreateNew = (props) => {
             <form onSubmit={handleSubmit}>
                 <div>
                     content
-                    <input
-                        name="content"
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                    />
+                    <input type={content.type} value={content.value} onChange={content.onChange} />
                 </div>
                 <div>
                     author
-                    <input
-                        name="author"
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
-                    />
+                    <input type={author.type} value={author.value} onChange={author.onChange} />
                 </div>
                 <div>
-                    url for more info
-                    <input name="info" value={info} onChange={(e) => setInfo(e.target.value)} />
+                    info
+                    <input type={info.type} value={info.value} onChange={info.onChange} />
                 </div>
-                <button>create</button>
+                <button type="submit">create</button>
+                <button type="button" onClick={handleClear}>
+                    clear
+                </button>
             </form>
         </div>
     );

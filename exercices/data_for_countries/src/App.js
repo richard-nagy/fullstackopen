@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useCountry } from "./hooks";
 
 const DetailedResult = ({ country }) => {
     return (
@@ -31,34 +32,23 @@ const Country = ({ country }) => {
 };
 
 const Results = ({ results }) => {
-    if (results.length > 5) {
-        return <div>Too much results</div>;
+    if (results.length !== 1) {
+        return <div>I need a full countries name</div>;
+    } else {
     }
 
-    if (results.length === 1) {
-        return <DetailedResult country={results[0]} />;
-    }
-
-    return results.map((country) => {
-        return <Country country={country} key={country.flag} />;
-    });
+    return <DetailedResult country={results[0]} />;
 };
 
 export default function App() {
-    const [countries, setCountries] = useState([]);
     const [filter, setFilter] = useState("");
+    const countries = useCountry(filter);
 
     const results =
         countries &&
         countries.filter((country) =>
             country.name.common.toLowerCase().includes(filter.toLocaleLowerCase())
         );
-
-    useEffect(() => {
-        axios.get("https://restcountries.com/v3.1/all").then((response) => {
-            setCountries(response.data);
-        });
-    }, []);
 
     return (
         <div className="App">
