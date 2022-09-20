@@ -1,30 +1,25 @@
 import BlogForm from "./BlogForm";
 import Blog from "./Blog";
 import Togglable from "./Togglable";
+import { useSelector } from "react-redux";
 
-const BlogList = (user, logOut, noteFormRef, addBlog, blogs, deleteBlog, updateBlog) => (
-    <div>
-        <p>
-            {user.name} logged in <button onClick={() => logOut()}>log out</button>
-        </p>
-        <Togglable buttonLabel="new note" ref={noteFormRef}>
-            <BlogForm createBlog={addBlog} />
-        </Togglable>
-        {blogs
-            .sort((a, b) => {
-                return b.likes - a.likes;
-            })
-            .map((blog) => {
-                return (
-                    <Blog
-                        key={blog.id}
-                        blog={blog}
-                        deleteBlog={deleteBlog}
-                        updateBlog={updateBlog}
-                    />
-                );
+const BlogList = ({ noteFormRef }) => {
+    const blogs = useSelector(({ blogs }) => {
+        return [...blogs].sort((a, b) => {
+            return b.likes - a.likes;
+        });
+    });
+
+    return (
+        <div>
+            <Togglable buttonLabel="new note" ref={noteFormRef}>
+                <BlogForm />
+            </Togglable>
+            {blogs.map((blog) => {
+                return <Blog key={blog.id} blog={blog} />;
             })}
-    </div>
-);
+        </div>
+    );
+};
 
 export default BlogList;

@@ -44,4 +44,13 @@ const remove = (id) => {
     return request.then((response) => response.data);
 };
 
-export default { getAll, create, update, setToken, remove };
+const getAllUsers = () => {
+    const config = {
+        headers: { Authorization: token },
+    };
+
+    const request = axios.get("http://localhost:3003/api/users", config);
+    return request.then((response) => response.data);
+};
+
+export default { getAll, create, update, setToken, remove, getAllUsers };

@@ -6,7 +6,6 @@ const { checkTitleUrl } = require("../utils/middleware");
 
 blogsRouter.get("/", async (request, response) => {
     const blogs = await Blog.find({}).populate("user");
-
     response.json(blogs);
 });
 
@@ -19,6 +18,7 @@ blogsRouter.get("/:id", async (request, response) => {
     }
 });
 
+// Add blog
 blogsRouter.post("/", checkTitleUrl, async (request, response) => {
     const body = request.body;
 
@@ -33,6 +33,7 @@ blogsRouter.post("/", checkTitleUrl, async (request, response) => {
         url: body.url,
         likes: body.likes,
         user: user._id,
+        comments: [],
     });
 
     const savedBlog = await blog.save();
@@ -42,6 +43,7 @@ blogsRouter.post("/", checkTitleUrl, async (request, response) => {
     response.status(201).json(savedBlog);
 });
 
+// Delete blog
 blogsRouter.delete("/:id", async (request, response) => {
     const blog = await Blog.findById(request.params.id);
     const blogUserId = blog.user.toString();
@@ -58,9 +60,10 @@ blogsRouter.delete("/:id", async (request, response) => {
     const blogs = await Blog.find({}).populate("user");
     console.log(blogs);
 
-    response.status(201).json(blogs);
+    response.status(201).json(true);
 });
 
+// Update blog
 blogsRouter.put("/:id", (request, response, next) => {
     const body = request.body;
 
@@ -69,11 +72,14 @@ blogsRouter.put("/:id", (request, response, next) => {
         author: body.author,
         url: body.url,
         likes: body.likes,
+        comments: body.comments,
     };
 
     Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
         .then((updateBlog) => {
             response.json(updateBlog);
+            console.log("siker");
+            console.log(updateBlog);
         })
         .catch((error) => next(error));
 });

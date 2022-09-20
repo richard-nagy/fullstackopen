@@ -1,6 +1,11 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { createBlog } from "../reducers/blogReducer";
+import { newNotification } from "../reducers/notificationReducer";
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = () => {
+    const dispatch = useDispatch();
+
     const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
 
     const handleChange = (event, parameter) => {
@@ -9,9 +14,14 @@ const BlogForm = ({ createBlog }) => {
 
     const addBlog = (event) => {
         event.preventDefault();
-        console.log(newBlog);
-        createBlog(newBlog);
-        setNewBlog({ title: "", author: "", url: "" });
+
+        try {
+            dispatch(createBlog(newBlog));
+            setNewBlog({ title: "", author: "", url: "" });
+            dispatch(newNotification({ message: "succesfull add", color: "green" }));
+        } catch {
+            dispatch(newNotification({ message: "failed add", color: "red" }));
+        }
     };
 
     return (
